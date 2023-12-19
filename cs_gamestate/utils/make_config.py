@@ -75,7 +75,8 @@ if __name__ == "__main__":
     # Collect and parse the arguments supplied via command line
     args = parser.parse_args()
     # Remove the "--subscribe-to-all" auxiliary argument
-    del args.subscribe_to_all
+    if hasattr(args, "subscribe_to_all"):
+        del args.subscribe_to_all
     # Create a new configuration object from command line arguments unpacked
     # from dictionary to keyword arguments
     config = GSIConfig(**args.__dict__)

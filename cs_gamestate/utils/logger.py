@@ -1,3 +1,5 @@
+# System to print to standard error stream
+import sys
 # Use the argparse library to set up a command line interface
 import argparse
 # Use json so serialize the game state
@@ -23,6 +25,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--json", action="store_true", help="Format output as JSON"
     )
+    # Optional argument specifying game state verification output
+    parser.add_argument(
+        "--verify", action="store_true", help="Verifies each gamestate"
+    )
     # Collect and parse the arguments supplied via command line
     args = parser.parse_args()  # @formatter:off Inserts too many newlines here
 
@@ -41,5 +47,9 @@ if __name__ == "__main__":
         # Read the next game state received by the server
         #   Reset the state buffer and block to only receive unique new states
         state = server.read(reset=True, block=True)
+        # Optionally verify the gema state
+        if args.verify:
+            # Print verification to standard error
+            print("\n".join(state.verify()), file=sys.stderr)
         # Log the state as string representation to the console output
         print(maybe_json(state))

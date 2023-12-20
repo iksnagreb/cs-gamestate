@@ -85,6 +85,6 @@ if __name__ == "__main__":
     # Print some instructions on what to do next
     print("\n".join([
         f"// To register this service with the game, place the configuration",
-        f"// above as gamestate_integration_{args.name}.cfg into the game's",
-        f"// configuration directory."
+        f"// above as \"gamestate_integration_{args.name}.cfg\" into the",
+        f"// game's configuration directory."
     ]))

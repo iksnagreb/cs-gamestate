@@ -12,6 +12,7 @@ from cs_gamestate.structs.bomb import Bomb
 from cs_gamestate.structs.round import Round
 from cs_gamestate.structs.phase import PhaseCountdowns
 from cs_gamestate.structs.map import Map
+from cs_gamestate.structs.equipment import ActiveGrenade
 # Game state structures verification utils
 from cs_gamestate.structs.verify import VerifiedSubstructures
 # Utility functions for initializing the game state structures
@@ -40,7 +41,7 @@ class GameState(VerifiedSubstructures):
     #   Note: Recursively refers to the GameState root
     previously: GameState = None
     # Information on currently active grenade effects
-    grenades: dict = None
+    grenades: dict[str, ActiveGrenade] = None
     # Information an all players in the game
     allplayers: dict[str, Player] = None
 
@@ -59,6 +60,16 @@ class GameState(VerifiedSubstructures):
                 # messages
                 messages.extend(
                     [f"allplayers: {name}: {msg}" for msg in player.verify()]
+                )
+        # The "grenades" field must be verified separately if it is present
+        if self.grenades is not None:
+            # Verifying the "grenades" field cannot be automated as it is of
+            # type dict
+            for name, grenade in self.grenades.items():
+                # Verify each grenade using its method and collecting the
+                # messages
+                messages.extend(
+                    [f"grenades: {name}: {msg}" for msg in grenade.verify()]
                 )
         # Return the collected verification messages
         return messages
@@ -168,20 +179,58 @@ class GameState(VerifiedSubstructures):
 
         # Sanitize the allplayers dictionary if it is present
         if self.allplayers is not None:
-            # Validate each allplayers slot
-            for key, player in self.allplayers.items():
-                # If the player is not an instance of the Player structure,
-                # reinitialize it
-                if not isinstance(player, Player):
-                    # If it ist a dictionary, this can be unpacked to initialize
-                    if isinstance(player, dict):
-                        # It must be a dictionary, reload from dict unpacking
-                        player = Player(**player)
-                    # Sometimes the client seems to provide just a boolean for
-                    # this field (other types possible as well?)
-                    else:
-                        # Cannot really handle this, treat as "not present"
-                        player = None  # noqa
-                # Reinitialize the player slot with key guaranteed to be a
-                # string
-                self.allplayers[str(key)] = player
+            # If it ist a dictionary, this can be unpacked to initialize
+            if isinstance(self.allplayers, dict):
+                # Validate each allplayers slot
+                for key, player in self.allplayers.items():
+                    # If the player is not an instance of the Player structure,
+                    # reinitialize it
+                    if not isinstance(player, Player):
+                        # If it ist a dictionary, this can be unpacked to
+                        # initialize
+                        if isinstance(player, dict):
+                            # It must be a dictionary, reload from dict
+                            # unpacking
+                            player = Player(**player)
+                        # Sometimes the client seems to provide just a boolean
+                        # for this field (other types possible as well?)
+                        else:
+                            # Cannot really handle this, treat as "not present"
+                            player = None  # noqa
+                    # Reinitialize the player slot with key guaranteed to be a
+                    # string
+                    self.allplayers[str(key)] = player
+            # Sometimes the client seems to provide just a boolean for
+            # this field (other types possible as well?)
+            else:
+                # Cannot really handle this, treat as "not present"
+                self.allplayers = None  # noqa
+
+        # Sanitize the active grenades dictionary if it is present
+        if self.grenades is not None:
+            # If it ist a dictionary, this can be unpacked to initialize
+            if isinstance(self.grenades, dict):
+                # Validate each grenades slot
+                for key, grenade in self.grenades.items():
+                    # If the grenade is not an instance of the ActiveGrenade
+                    # structure, reinitialize it
+                    if not isinstance(grenade, ActiveGrenade):
+                        # If it ist a dictionary, this can be unpacked to
+                        # initialize
+                        if isinstance(grenade, dict):
+                            # It must be a dictionary, reload from dict
+                            # unpacking
+                            grenade = ActiveGrenade(**grenade)
+                        # Sometimes the client seems to provide just a boolean
+                        # for this field (other types possible as well?)
+                        else:
+                            # Cannot really handle this, treat as "not present"
+                            grenade = None  # noqa
+                    # Reinitialize the grenade with key guaranteed to be a
+                    # string
+                    self.grenades[str(key)] = grenade
+            # Sometimes the client seems to provide just a boolean for
+            # this field (other types possible as well?)
+            else:
+                # Cannot really handle this, treat as "not present"
+                self.grenades = None  # noqa

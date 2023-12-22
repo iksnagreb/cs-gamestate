@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 # Game state structures verification utils
 from cs_gamestate.structs.verify import VerifiedSubstructures, verify_attribute
+# Utility functions for initializing the game state structures
+from cs_gamestate.structs.utils import none_or_isinstance
 
 
 # Structure holding information on a single weapon in game
@@ -44,6 +46,96 @@ class Weapon(VerifiedSubstructures):
         messages.extend(verify_attribute(self, WeaponState, "state"))
         # Return the collected verification messages
         return messages
+
+
+# Structure holding information on an active grenade effect
+@dataclass
+class ActiveGrenade(VerifiedSubstructures):
+    # Steam ID of the player owning the grenade
+    owner: str = None
+    # Current position of the grenade in cartesian coordinates
+    # Note: Changes over time when the grenade is thrown until it lands or
+    # explodes somewhere
+    position: tuple[float, ...] = None
+    # Current velocity of the grenade in cartesian coordinates
+    # Note Changes over time and should correspond to the change in position
+    velocity: tuple[float, ...] = None
+    # Time since the grenade became active
+    lifetime: int = None
+    # Type of the grenade: decoy,
+    type: str = None
+    # Time since the grenade has an effect
+    effecttime: int = None
+    # Coordinates of each flame piece on the map of molotov/incendiary grenade
+    # Note: A dictionary of some flame piece identifier and a coordinate tuple
+    flames: dict[str, tuple[float, ...]] = None
+
+    # Tries to verify the validity of the component producing a list of messages
+    # if something is not right
+    def verify(self):
+        # Start collecting messages in list, automate verification of
+        # substructures
+        messages = super().verify()
+        # Verify the grenade type is one of the known types
+        from cs_gamestate.enums.equipment import GrenadeType
+        messages.extend(verify_attribute(self, GrenadeType, "type"))
+        # Return the collected verification messages
+        return messages
+
+    # Post-init the dataclass to sanitize not correctly imported substructures
+    def __post_init__(self):
+        # If the position has not yet been parsed
+        if not none_or_isinstance(self.position, tuple):  # noqa Duplicate
+            # If this is currently a string, it can be reinterpreted as a
+            # coordinate tuple
+            if isinstance(self.position, str):
+                # Simple string parsing to separate the two numbers by ,
+                self.position = tuple(map(float, self.position.split(',')))
+            # Sometimes the client seems to provide just a boolean
+            # for this field (other types possible as well?)
+            else:
+                # Cannot really handle this, treat as "not present"
+                self.position = None  # noqa
+
+        # If the velocity has not yet been parsed
+        if not none_or_isinstance(self.velocity, tuple):
+            # If this is currently a string, it can be reinterpreted as a
+            # coordinate tuple
+            if isinstance(self.velocity, str):
+                # Simple string parsing to separate the two numbers by ,
+                self.velocity = tuple(map(float, self.velocity.split(',')))
+            # Sometimes the client seems to provide just a boolean
+            # for this field (other types possible as well?)
+            else:
+                # Cannot really handle this, treat as "not present"
+                self.velocity = None  # noqa
+
+        # Sanitize the flames dictionary if it is present
+        if self.flames is not None:
+            # If it ist a dictionary, this can be unpacked to initialize
+            if isinstance(self.flames, dict):
+                # Validate each flame piece
+                for key, flame in self.flames.items():
+                    # If the flame is not coordinate tuple yet
+                    if not isinstance(flame, tuple):
+                        # If this is currently a string, it can be reinterpreted
+                        # as a coordinate tuple
+                        if isinstance(flame, str):
+                            # Simple string parsing to separate the two numbers
+                            # by ,
+                            flame = tuple(map(float, flame.split(',')))
+                        # Sometimes the client seems to provide just a boolean
+                        # for this field (other types possible as well?)
+                        else:
+                            # Cannot really handle this, treat as "not present"
+                            flame = None  # noqa
+                    # Reinitialize the flame with key guaranteed to be a string
+                    self.flames[str(key)] = flame
+            # Sometimes the client seems to provide just a boolean for
+            # this field (other types possible as well?)
+            else:
+                # Cannot really handle this, treat as "not present"
+                self.flames = None  # noqa
 
 
 # Structure describing the player's equipment, which is a mapping of weapon

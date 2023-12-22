@@ -74,3 +74,13 @@ class WeaponState(Enum):
     ACTIVE = "active"
     HOLSTERED = "holstered"
     RELOADING = "reloading"
+
+
+# Known grenade types and their string representation
+class GrenadeType(Enum):
+    DECOY = "decoy"
+    HEGRENADE = "FRAG"
+    FLASHBANG = "flashbang"
+    SMOKEGRENADE = "smoke"
+    INCGRENADE = "inferno"
+    MOLOTOV = "firebomb"

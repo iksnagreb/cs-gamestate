@@ -166,7 +166,7 @@ class Player(VerifiedSubstructures):
                 self.weapons = Equipment(self.weapons)
 
         # If the position has not yet been parsed
-        if not none_or_isinstance(self.position, tuple):
+        if not none_or_isinstance(self.position, tuple):  # noqa Duplicate
             # If this is currently a string, it can be reinterpreted as a
             # coordinate tuple
             if isinstance(self.position, str):

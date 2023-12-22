@@ -22,6 +22,6 @@ class GameMode(Enum):
 class RoundWinCondition(Enum):
     CT_WIN_ELIMINATION = "ct_win_elimination"
     T_WIN_ELIMINATION = "t_win_elimination"
-    T_WIN_BOMB = "t_win_bomb"
     CT_WIN_DEFUSE = "ct_win_defuse"
-    # TODO: Probably missing: Running out of time
+    T_WIN_BOMB = "t_win_bomb"
+    CT_WIN_TIME = "ct_win_time"

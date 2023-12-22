@@ -44,7 +44,7 @@ class WeaponName(Enum):
     M4A1 = "weapon_m4a1"
     M4A1_SILENCER = "weapon_m4a1_silencer"
     SCAR20 = "weapon_scar20"
-    SG553 = "weapon_sg553"
+    SG553 = "weapon_sg556"
     SSG08 = "weapon_ssg08"
     BIZON = "weapon_bizon"
     MAC10 = "weapon_mac10"

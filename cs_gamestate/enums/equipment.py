@@ -79,7 +79,7 @@ class WeaponState(Enum):
 # Known grenade types and their string representation
 class GrenadeType(Enum):
     DECOY = "decoy"
-    HEGRENADE = "FRAG"
+    HEGRENADE = "frag"
     FLASHBANG = "flashbang"
     SMOKEGRENADE = "smoke"
     INCGRENADE = "inferno"

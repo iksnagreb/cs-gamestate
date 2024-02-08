@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Read long description from README
 with open("README.md", "r", encoding="utf-8") as file:
@@ -15,7 +15,7 @@ setup(
     # Current version of the package
     version="0.0.2",
     # Which packages to include and from where
-    packages=["cs_gamestate"],
+    packages=find_packages(),
     # Short description of the package
     description="Counter-Strike Game State Integration for Python",
     # Long description from README

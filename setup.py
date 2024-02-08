@@ -13,7 +13,7 @@ setup(
     # Short name of the package
     name="cs-gamestate",
     # Current version of the package
-    version="0.0.2",
+    version="0.0.3",
     # Which packages to include and from where
     packages=find_packages(),
     # Short description of the package

@@ -79,6 +79,8 @@ class Player(VerifiedSubstructures):
     observer_slot: int = None
     # Team the player belongs to: either "T" or "CT", maybe None in menu
     team: str = None
+    # XP Overload status, Value is the amount of weeks they have had XP Overload
+    xpoverload: int = None
     # Current activity of the player: playing, menu, textinput
     activity: str = None
     # Steam ID of the spectated player
